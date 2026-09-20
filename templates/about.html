@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>О проекте</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: #080b18;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+        }
+
+        .about-header {
+            height: 75px;
+            display: flex;
+            align-items: center;
+            padding: 0 30px;
+            background: #111832;
+        }
+
+        .about-header h1 {
+            margin: 0;
+            color: #a7d8ff;
+            font-size: 26px;
+        }
+
+        .about-nav {
+            margin-left: auto;
+        }
+
+        .about-nav a {
+            color: #ffffff;
+            text-decoration: none;
+            margin-left: 25px;
+            font-size: 16px;
+        }
+
+        .about-nav a:hover {
+            color: #a7d8ff;
+        }
+
+        .about-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 25px;
+        }
+
+        .about-content {
+            display: flex;
+            align-items: flex-start;
+            gap: 35px;
+        }
+
+        .about-text {
+            flex: 1;
+            font-size: 18px;
+            line-height: 1.7;
+        }
+
+        .about-text a {
+            color: #a7d8ff;
+        }
+
+        .about-image {
+            width: 300px;
+            border-radius: 12px;
+            object-fit: cover;
+        }
+
+        .bottom-image {
+            display: block;
+            width: 420px;
+            max-width: 100%;
+            margin: 35px auto 0;
+            border-radius: 12px;
+        }
+
+        @media (max-width: 700px) {
+            .about-content {
+                flex-direction: column;
+            }
+
+            .about-image {
+                width: 100%;
+                max-width: 350px;
+                margin: 0 auto;
+            }
+
+            .about-header {
+                padding: 0 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="about-header">
+        <h1>О проекте</h1>
+        <nav class="about-nav">
+            <a href="/">Главная</a>
+        </nav>
+    </header>
+
+    <main class="about-container">
+        <div class="about-content">
+            <div class="about-text">
+                <p>
+                    <strong>Карта:</strong>
+                    <a href="https://aladin.cds.unistra.fr/AladinLite/" target="_blank">
+                        Aladin Lite
+                    </a>
+                </p>
+                <p>
+                    <strong>Автор сайта: </strong>
+                    <a href="https://t.me/iun_po" target="_blank">@iun_po</a>
+                </p>
+                <p>
+                    Сайт разработан студентом-неучем для курсовой работы.
+                    При желании поддержать несчастного студента копеечкой —
+                    номер карты Сбербанка:
+                    <strong>2202 2062 4874 3317</strong>.
+                </p>
+                <p>При желании дать пинка за кривой сайт, можете писать в лс :)</p>
+            </div>
+
+            <img src="{{ url_for('static', filename='images/я устала.jpg') }}"
+                 alt="Голубь"
+                 class="about-image">
+        </div>
+
+        <img src="{{ url_for('static', filename='images/спасибо чагу гпт без него я никто.jpg') }}"
+             alt="не голубь"
+             class="bottom-image">
+    </main>
+</body>
+</html>

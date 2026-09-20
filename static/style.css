@@ -1,0 +1,1030 @@
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    background: #000;
+}
+
+/* ШАПКА */
+
+header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 75px;
+    background: #000;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: normal;
+}
+
+/* НАВИГАЦИЯ */
+
+nav {
+    position: absolute;
+    top: 75px;
+    left: 0;
+    right: 0;
+    height: 35px;
+    background: #191f45;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+    z-index: 100;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+nav a:hover {
+    color: #a7d8ff;
+}
+
+nav .about-link {
+    margin-left: 5px;
+}
+
+nav .login-link {
+    cursor: pointer;
+}
+
+/* ПОИСК */
+
+.search-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 35px;
+}
+
+.search-button {
+    width: 28px;
+    height: 30px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: white;
+    font-size: 25px;
+    line-height: 30px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translateY(-2px);
+}
+
+.search-button:hover {
+    color: #a7d8ff;
+}
+
+#search-wrapper {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 300px;
+    height: 35px;
+    display: none;
+    z-index: 10;
+}
+
+#search-wrapper.active {
+    display: block;
+}
+
+#search-input {
+    width: 300px;
+    height: 35px;
+    padding: 0 12px;
+    border: 1px solid #596ee0;
+    border-radius: 5px;
+    outline: none;
+    background: #070d26;
+    color: white;
+    font-size: 14px;
+}
+
+#search-input::placeholder {
+    color: #a7d8ff;
+}
+
+#search-input:focus {
+    border-color: #a7d8ff;
+}
+
+#search-error {
+    position: absolute;
+    top: 40px;
+    left: 0;
+    width: 300px;
+    padding: 9px 11px;
+    border-radius: 5px;
+    background: rgba(7, 13, 38, 0.97);
+    color: #ff9b9b;
+    font-size: 13px;
+    line-height: 1.3;
+    display: none;
+}
+
+#search-error.visible {
+    display: block;
+}
+
+#search-result {
+    display: none;
+    margin-left: 8px;
+    padding: 5px 9px;
+    border: none;
+    border-radius: 5px;
+    background: #111735;
+    color: white;
+    font-size: 14px;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+#search-result.visible {
+    display: inline-block;
+}
+
+#search-result:hover {
+    background: #1c2550;
+    color: #a7d8ff;
+}
+
+/* ОСНОВНАЯ ОБЛАСТЬ */
+
+main {
+    position: absolute;
+    top: 110px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+#aladin-lite-div {
+    width: 100%;
+    height: 100%;
+}
+
+/* БОКОВАЯ ПАНЕЛЬ */
+
+.side-panel {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    width: 295px;
+    max-height: calc(100% - 30px);
+    overflow-y: auto;
+    padding: 18px;
+    background: rgba(7, 13, 38, 0.96);
+    color: white;
+    border-radius: 12px;
+    z-index: 50;
+}
+
+.side-panel h2 {
+    margin: 0 0 18px;
+    font-size: 23px;
+    font-weight: normal;
+}
+
+.side-panel h3 {
+    margin: 18px 0 10px;
+    font-size: 17px;
+    color: #a7d8ff;
+}
+
+/* КНОПКИ ОБЪЕКТОВ */
+
+.object-button {
+    display: block;
+    width: 100%;
+    margin: 6px 0;
+    padding: 10px 13px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background: #29346d;
+    color: white;
+    text-align: left;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.object-button:hover {
+    background: #3d4c91;
+}
+
+.object-button.selected {
+    background: #596ee0;
+    border: 2px solid #a7d8ff;
+    box-shadow: 0 0 12px rgba(167, 216, 255, 0.55);
+}
+
+/* КАРТОЧКА */
+
+#info-card {
+    position: absolute;
+    top: 25px;
+    right: 25px;
+    width: 330px;
+    max-height: calc(100% - 50px);
+    overflow-y: auto;
+    padding: 20px;
+    background: #070d26;
+    color: white;
+    border: 1px solid #3d4c91;
+    border-radius: 14px;
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.7);
+    z-index: 80;
+    display: none;
+}
+
+#info-card.visible {
+    display: block;
+}
+
+.card-close {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    width: 25px;
+    height: 25px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: white;
+    font-size: 23px;
+    line-height: 23px;
+    cursor: pointer;
+}
+
+.card-close:hover {
+    color: #a7d8ff;
+}
+
+.card-title {
+    margin: 4px 35px 18px 0;
+    color: #a7d8ff;
+    font-size: 23px;
+    font-weight: bold;
+    line-height: 1.25;
+}
+
+.card-description {
+    margin-bottom: 15px;
+    color: white;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.card-line {
+    height: 1px;
+    margin: 14px 0;
+    background: #343d70;
+}
+
+.card-details {
+    color: #cbd5ff;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.card-details strong {
+    color: #a7d8ff;
+    font-size: 14px;
+}
+
+/* СПИСОК ЗВЁЗД СОЗВЕЗДИЯ */
+
+.constellation-list-title {
+    margin-bottom: 9px;
+    color: #a7d8ff;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.constellation-stars {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.constellation-star-link {
+    display: block;
+    padding: 6px 8px;
+    border-radius: 5px;
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.constellation-star-link:hover {
+    background: #29346d;
+    color: #a7d8ff;
+}
+
+/* ЭЛЕМЕНТЫ ALADIN */
+
+.aladin-projection-control,
+.aladin-location,
+.aladin-status-bar {
+    display: none !important;
+}
+
+/* РАЗДЕЛЫ КАТАЛОГА */
+
+.catalog-section {
+    margin-bottom: 10px;
+}
+
+.catalog-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 12px 10px;
+    border: none;
+    border-radius: 6px;
+    background: #29346d;
+    color: #a7d8ff;
+    font-size: 17px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.catalog-title:hover {
+    background: #3d4c91;
+}
+
+.catalog-title span {
+    font-size: 20px;
+}
+
+.catalog-content {
+    display: none;
+    padding-top: 8px;
+}
+
+.catalog-content.open {
+    display: block;
+}
+
+.catalog-content h4 {
+    margin: 12px 0 8px;
+    color: #a7d8ff;
+    font-size: 14px;
+    font-weight: normal;
+}
+
+.about-nav {
+    transform: translateX(-9px);
+}
+
+/* ОКНО ВХОДА */
+
+.auth-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.55);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.auth-card {
+    position: relative;
+    width: 320px;
+    padding: 30px;
+    background: #191f45;
+    border-radius: 12px;
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.7);
+    color: white;
+}
+
+.auth-card h2 {
+    margin: 0 0 25px;
+    text-align: center;
+    font-size: 22px;
+    font-weight: normal;
+}
+
+.auth-close {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    border: none;
+    background: none;
+    color: white;
+    font-size: 25px;
+    cursor: pointer;
+}
+
+.auth-card input {
+    width: 100%;
+    height: 38px;
+    margin-bottom: 12px;
+    padding: 0 10px;
+    border: none;
+    border-radius: 6px;
+    background: #fff;
+    color: #000;
+    font-size: 14px;
+}
+
+.auth-submit {
+    width: 100%;
+    height: 38px;
+    margin-top: 5px;
+    border: none;
+    border-radius: 6px;
+    background: #a7d8ff;
+    color: #111827;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.auth-submit:hover {
+    background: #c4e6ff;
+}
+
+.auth-error {
+    min-height: 18px;
+    margin-top: 10px;
+    text-align: center;
+    color: #ff9b9b;
+    font-size: 13px;
+}
+
+.auth-switch {
+    margin-top: 15px;
+    text-align: center;
+    font-size: 13px;
+}
+
+.auth-switch button {
+    border: none;
+    background: none;
+    color: #a7d8ff;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.hidden {
+    display: none;
+}
+
+.username {
+    color: #a7d8ff;
+    font-size: 14px;
+}
+
+.logout-link {
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.logout-link:hover {
+    color: #a7d8ff;
+}
+
+/* МОИ ЗАМЕТКИ */
+
+.notes-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.55);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.notes-card {
+    position: relative;
+    width: 420px;
+    max-height: 80vh;
+    padding: 30px;
+    background: #191f45;
+    border-radius: 12px;
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.7);
+    color: white;
+    overflow-y: auto;
+}
+
+.notes-card h2 {
+    margin: 0 0 20px;
+    text-align: center;
+    font-size: 22px;
+    font-weight: normal;
+}
+
+.notes-close {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    border: none;
+    background: none;
+    color: white;
+    font-size: 25px;
+    cursor: pointer;
+}
+
+#note-text {
+    width: 100%;
+    min-height: 90px;
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    resize: vertical;
+    font-family: inherit;
+    font-size: 14px;
+}
+
+.note-submit {
+    width: 100%;
+    height: 38px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 6px;
+    background: #a7d8ff;
+    color: #111827;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.note-submit:hover {
+    background: #c4e6ff;
+}
+
+#notes-list {
+    margin-top: 20px;
+}
+
+.note-item {
+    position: relative;
+    margin-bottom: 12px;
+    padding: 12px 40px 12px 12px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    font-size: 14px;
+    line-height: 1.4;
+    word-wrap: break-word;
+}
+
+.note-delete {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    border: none;
+    background: none;
+    color: #ff9b9b;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+/* ОКНО ДОБАВЛЕНИЯ ЗАМЕТКИ */
+
+#object-note-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.55);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1001;
+}
+
+#object-note-overlay .notes-card {
+    position: relative;
+    width: 420px;
+    max-height: 80vh;
+    padding: 30px;
+    background: #191f45;
+    border-radius: 12px;
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.7);
+    color: white;
+    overflow-y: auto;
+}
+
+#object-note-title {
+    margin: 0 0 20px;
+    padding-right: 25px;
+    text-align: center;
+    color: white;
+    font-size: 22px;
+    font-weight: normal;
+    line-height: 1.3;
+}
+
+#object-note-text {
+    display: block;
+    width: 100%;
+    min-height: 110px;
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    outline: none;
+    resize: vertical;
+    background: #fff;
+    color: #000;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+#object-note-text::placeholder {
+    color: #777;
+}
+
+#object-note-text:focus {
+    outline: 2px solid #a7d8ff;
+    outline-offset: -2px;
+}
+
+#object-note-overlay .note-submit {
+    width: 100%;
+    height: 38px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 6px;
+    background: #a7d8ff;
+    color: #111827;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+#object-note-overlay .note-submit:hover {
+    background: #c4e6ff;
+}
+
+#object-note-overlay .notes-close {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    border: none;
+    background: none;
+    color: white;
+    font-size: 25px;
+    cursor: pointer;
+}
+
+#object-note-overlay .notes-close:hover {
+    color: #a7d8ff;
+}
+
+#object-note-error {
+    min-height: 18px;
+    margin-top: 10px;
+    text-align: center;
+    color: #ff9b9b;
+    font-size: 13px;
+}
+
+/* ЗАМЕТКА К ОБЪЕКТУ */
+
+.object-note-container {
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.add-object-note {
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+    padding: 8px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    border-radius: 7px;
+    background: rgba(255, 255, 255, 0.06);
+    color: #fff;
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.add-object-note:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.35);
+}
+
+.object-note {
+    padding: 10px 11px;
+    border-radius: 7px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.object-note strong {
+    display: block;
+    margin-bottom: 7px;
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.65);
+}
+
+.object-note-text {
+    font-size: 13px;
+    line-height: 1.45;
+    color: #fff;
+    word-break: break-word;
+}
+
+.object-note .add-object-note {
+    margin-top: 9px;
+    padding: 6px 10px;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.65);
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+.object-note .add-object-note:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.22);
+    color: #fff;
+}
+
+/* ПЛАНШЕТ */
+
+.mobile-catalog-button {
+    display: none;
+}
+
+@media (max-width: 1024px) {
+    header {
+        height: 65px;
+    }
+
+    header h1 {
+        font-size: 21px;
+    }
+
+    nav {
+        top: 65px;
+        height: 35px;
+        gap: 22px;
+    }
+
+    nav a,
+    .username,
+    .logout-link {
+        font-size: 13px;
+    }
+
+    main {
+        top: 100px;
+    }
+
+    .side-panel {
+        width: 260px;
+        padding: 15px;
+    }
+
+    .side-panel h2 {
+        font-size: 21px;
+    }
+
+    .object-button {
+        font-size: 15px;
+        padding: 9px 11px;
+    }
+
+    #info-card {
+        width: 300px;
+        right: 15px;
+        top: 15px;
+    }
+}
+
+/* ТЕЛЕФОН */
+
+@media (max-width: 600px) {
+    html,
+    body {
+        width: 100%;
+        min-height: 100%;
+        height: auto;
+        overflow-x: hidden;
+        overflow-y: auto;
+    }
+
+    header {
+        position: fixed;
+        height: 55px;
+        padding: 0 10px;
+        justify-content: center;
+    }
+
+    header h1 {
+        font-size: 17px;
+        text-align: center;
+        white-space: nowrap;
+    }
+
+    nav {
+        position: fixed;
+        top: 55px;
+        height: 40px;
+        gap: 10px;
+        padding: 0 8px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        justify-content: center;
+        white-space: nowrap;
+    }
+
+    nav a,
+    .username,
+    .logout-link {
+        font-size: 12px;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    .search-container {
+        flex-shrink: 0;
+    }
+
+    .search-button {
+        font-size: 22px;
+    }
+
+    #search-wrapper {
+        position: fixed;
+        top: 95px;
+        left: 8px;
+        width: calc(100vw - 16px);
+    }
+
+    #search-input,
+    #search-error {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    #search-result {
+        max-width: 120px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    main {
+        position: absolute;
+        top: 95px;
+        bottom: 0;
+        min-height: calc(100vh - 95px);
+    }
+
+    .mobile-catalog-button {
+        display: block;
+        position: fixed;
+        top: 108px;
+        left: 10px;
+        padding: 8px 11px;
+        border: 1px solid #596ee0;
+        border-radius: 7px;
+        background: rgba(7, 13, 38, 0.95);
+        color: white;
+        font-size: 13px;
+        cursor: pointer;
+        z-index: 90;
+    }
+
+    .mobile-catalog-button:hover {
+        background: #29346d;
+    }
+
+    .side-panel {
+        position: fixed;
+        top: 95px;
+        left: 0;
+        bottom: 0;
+        width: min(52vw, 190px);
+        max-height: none;
+        margin: 0;
+        padding: 11px;
+        border-radius: 0 12px 12px 0;
+        transform: translateX(-105%);
+        transition: transform 0.25s ease;
+        overflow-y: auto;
+        z-index: 80;
+    }
+
+    .side-panel.mobile-open {
+        transform: translateX(0);
+    }
+
+    .side-panel h2 {
+        font-size: 18px;
+        margin-bottom: 14px;
+    }
+
+    .object-button {
+        font-size: 13px;
+        padding: 8px 9px;
+    }
+
+    .catalog-title {
+        font-size: 14px;
+        padding: 10px 8px;
+    }
+
+    .catalog-title span {
+        font-size: 17px;
+    }
+
+    .catalog-content h4 {
+        font-size: 13px;
+    }
+
+    #info-card {
+        position: fixed !important;
+        top: 105px !important;
+        left: 8px !important;
+        right: 8px !important;
+        bottom: auto !important;
+        width: auto !important;
+        height: auto !important;
+        max-height: calc(100vh - 120px) !important;
+        padding: 15px;
+        border-radius: 11px;
+        box-sizing: border-box;
+        overflow-y: auto;
+        z-index: 95;
+    }
+
+    .card-title {
+        font-size: 18px;
+        margin-bottom: 12px;
+    }
+
+    .card-description {
+        font-size: 12px;
+        line-height: 1.4;
+    }
+
+    .card-details {
+        font-size: 11px;
+        line-height: 1.5;
+    }
+
+    .card-details strong {
+        font-size: 12px;
+    }
+
+    .auth-card,
+    .notes-card,
+    #object-note-overlay .notes-card {
+        width: calc(100vw - 30px);
+        max-width: 420px;
+        padding: 22px;
+    }
+
+    .auth-card h2,
+    .notes-card h2,
+    #object-note-title {
+        font-size: 20px;
+    }
+
+    #object-note-text,
+    #note-text {
+        min-height: 100px;
+    }
+
+    .about-nav {
+        transform: none;
+    }
+}

@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Интерактивный планетарий</title>
+
+    <script src="https://aladin.cds.unistra.fr/AladinLite/api/v3/latest/aladin.js"></script>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<header>
+    <h1>🌌 Интерактивный планетарий</h1>
+</header>
+
+<nav>
+    <div class="search-container">
+        <button class="search-button">⌕</button>
+
+        <div id="search-wrapper">
+            <input
+                id="search-input"
+                type="text"
+                placeholder="Пишите без ошибок"
+                autocomplete="off"
+                onkeydown="handleSearchKey(event)"
+            >
+
+            <div id="search-error">
+                Ничего не найдено, возможно в написании допущена ошибка
+            </div>
+        </div>
+
+        <button id="search-result" onclick="toggleSearch()"></button>
+    </div>
+
+    <a href="/">Главная</a>
+
+    <a href="/about" class="about-link">О проекте</a>
+
+    {% if username %}
+        <span class="username">{{ username }}</span>
+
+        <a
+            href="#"
+            class="notes-link"
+            onclick="openNotesCard(); return false;"
+        >
+            Мои заметки
+        </a>
+
+        <a href="/logout" class="logout-link">Выйти</a>
+    {% else %}
+        <a
+            href="#"
+            class="login-link"
+            onclick="openAuthCard(); return false;"
+        >
+            Войти
+        </a>
+    {% endif %}
+</nav>
+
+<main>
+
+    <div id="aladin-lite-div"></div>
+
+    <!-- КНОПКА КАТАЛОГА НА ТЕЛЕФОНЕ -->
+
+    <button
+        class="mobile-catalog-button"
+        onclick="toggleMobileCatalog()"
+    >
+        ☰ Каталог
+    </button>
+
+    <!-- БОКОВОЙ КАТАЛОГ -->
+
+    <aside class="side-panel" id="side-panel">
+
+        <h2>Каталог неба</h2>
+
+        <!-- СОЗВЕЗДИЯ -->
+
+        <div class="catalog-section">
+
+            <button
+                class="catalog-title"
+                onclick="toggleCatalogSection(this)"
+            >
+                Созвездия
+                <span>+</span>
+            </button>
+
+            <div class="catalog-content">
+
+                <h4>Основные созвездия</h4>
+
+                <button
+                    class="object-button"
+                    onclick="goToConstellation('Орион', this)"
+                >
+                    Орион
+                </button>
+
+                <button
+                    class="object-button"
+                    onclick="goToConstellation('Большая Медведица', this)"
+                >
+                    Большая Медведица
+                </button>
+
+                <button
+                    class="object-button"
+                    onclick="goToConstellation('Лира', this)"
+                >
+                    Лира
+                </button>
+
+                <button
+                    class="object-button"
+                    onclick="goToConstellation('Лебедь', this)"
+                >
+                    Лебедь
+                </button>
+
+                <button
+                    class="object-button"
+                    onclick="goToConstellation('Кассиопея', this)"
+                >
+                    Кассиопея
+                </button>
+
+                <h4>Знаки зодиака</h4>
+
+                <button
+                    class="object-button"
+                    onclick="goToConstellation('Овен', this)"
+                >
+                    Овен
+                </button>
+
+                <button
+                    class="object-button"
+                    onclick="goToConstellation('Телец', this)"
+                >
+                    Телец
+                </button>
+
+                <button
+                    class="object-button"
+                    onclick="goToConstellation('Близнецы', this)"
+                >
+                    Близнецы
+                </button>
+
+                <button
+                    class="object-button"
+                    onclick="goToConstellation('Рак', this)"
+                >
+                    Рак
+                </button>
+
+                <button
+                    class="object-button"
+                    onclick="goToConstellation('Лев', this)"
+                >
+                    Лев
+                </button>
+
+                <button
+                    class="object-button"
+                    onclick="goToConstellation('Дева', this)"
+                >
+                    Дева
+                </button>
+
+                <button
+                    class="object-button"
+                    onclick="goToConstellation('Весы', this)"
+                >
+                    Весы
+                </button>
+
+                <button
+                    class="object-button"
+                    onclick="goToConstellation('Скорпион', this)"
+                >
+                    Скорпион
+                </button>
+
+                <button
+                    class="object-button"
+                    onclick="goToConstellation('Стрелец', this)"
+                >
+                    Стрелец
+                </button>
+
+                <button
+                    class="object-button"
+                    onclick="goToConstellation('Козерог', this)"
+                >
+                    Козерог
+                </button>
+
+                <button
+                    class="object-button"
+                    onclick="goToConstellation('Водолей', this)"
+                >
+                    Водолей
+                </button>
+
+                <button
+                    class="object-button"
+                    onclick="goToConstellation('Рыбы', this)"
+                >
+                    Рыбы
+                </button>
+
+            </div>
+        </div>
+
+        <!-- ЯРКИЕ ЗВЁЗДЫ -->
+
+        <div class="catalog-section">
+
+            <button
+                class="catalog-title"
+                onclick="toggleCatalogSection(this)"
+            >
+                Яркие звёзды
+                <span>+</span>
+            </button>
+
+            <div class="catalog-content">
+
+                <button
+                    class="object-button"
+                    onclick="goToStar('Сириус', this)"
+                >
+                    Сириус
+                </button>
+
+                <button
+                    class="object-button"
+                    onclick="goToStar('Бетельгейзе', this)"
+                >
+                    Бетельгейзе
+                </button>
+
+                <button
+                    class="object-button"
+                    onclick="goToStar('Ригель', this)"
+                >
+                    Ригель
+                </button>
+
+                <button
+                    class="object-button"
+                    onclick="goToStar('Арктур', this)"
+                >
+                    Арктур
+                </button>
+
+                <button
+                    class="object-button"
+                    onclick="goToStar('Вега', this)"
+                >
+                    Вега
+                </button>
+
+                <button
+                    class="object-button"
+                    onclick="goToStar('Альфа Центавра', this)"
+                >
+                    Альфа Центавра
+                </button>
+
+            </div>
+        </div>
+
+    </aside>
+
+    <!-- КАРТОЧКА ОБЪЕКТА -->
+
+    <div id="info-card">
+
+        <button
+            class="card-close"
+            onclick="closeCard()"
+        >
+            ×
+        </button>
+
+        <div id="card-title" class="card-title"></div>
+
+        <div id="card-description" class="card-description"></div>
+
+        <div class="card-line"></div>
+
+        <div id="card-details" class="card-details"></div>
+
+    </div>
+
+    <!-- ЗАМЕТКА К ОБЪЕКТУ -->
+
+    {% if username %}
+
+    <div
+        id="object-note-overlay"
+        class="notes-overlay"
+    >
+
+        <div class="notes-card">
+
+            <button
+                class="notes-close"
+                onclick="closeObjectNote()"
+            >
+                ×
+            </button>
+
+            <h2 id="object-note-title">
+                Новая заметка
+            </h2>
+
+            <textarea
+                id="object-note-text"
+                placeholder="Напишите заметку..."
+            ></textarea>
+
+            <button
+                type="button"
+                class="note-submit"
+                onclick="saveObjectNote()"
+            >
+                Сохранить заметку
+            </button>
+
+            <div
+                id="object-note-error"
+                class="auth-error"
+            ></div>
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+    <!-- МОИ ЗАМЕТКИ -->
+
+    {% if username %}
+
+    <div
+        id="notes-overlay"
+        class="notes-overlay"
+    >
+
+        <div class="notes-card">
+
+            <button
+                class="notes-close"
+                onclick="closeNotesCard()"
+            >
+                ×
+            </button>
+
+            <h2>Мои заметки</h2>
+
+            <form id="note-form">
+
+                <textarea
+                    id="note-text"
+                    placeholder="Напишите заметку..."
+                    required
+                ></textarea>
+
+                <button
+                    type="submit"
+                    class="note-submit"
+                >
+                    Добавить заметку
+                </button>
+
+            </form>
+
+            <div id="notes-list"></div>
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+    <!-- ВХОД И РЕГИСТРАЦИЯ -->
+
+    <div
+        id="auth-overlay"
+        class="auth-overlay"
+    >
+
+        <div class="auth-card">
+
+            <button
+                class="auth-close"
+                onclick="closeAuthCard()"
+            >
+                ×
+            </button>
+
+            <h2 id="auth-title">Вход</h2>
+
+            <!-- ВХОД -->
+
+            <form id="login-form">
+
+                <input
+                    type="text"
+                    name="username"
+                    placeholder="Логин"
+                    required
+                >
+
+                <input
+                    type="password"
+                    name="password"
+                    placeholder="Пароль"
+                    required
+                >
+
+                <button
+                    type="submit"
+                    class="auth-submit"
+                >
+                    Войти
+                </button>
+
+                <div
+                    id="login-error"
+                    class="auth-error"
+                ></div>
+
+            </form>
+
+            <!-- РЕГИСТРАЦИЯ -->
+
+            <form
+                id="register-form"
+                class="hidden"
+            >
+
+                <input
+                    type="text"
+                    name="username"
+                    placeholder="Логин"
+                    required
+                >
+
+                <input
+                    type="password"
+                    name="password"
+                    placeholder="Пароль"
+                    required
+                >
+
+                <input
+                    type="password"
+                    name="password_repeat"
+                    placeholder="Повторите пароль"
+                    required
+                >
+
+                <button
+                    type="submit"
+                    class="auth-submit"
+                >
+                    Зарегистрироваться
+                </button>
+
+                <div
+                    id="register-error"
+                    class="auth-error"
+                ></div>
+
+            </form>
+
+            <!-- ПЕРЕКЛЮЧЕНИЕ -->
+
+            <div class="auth-switch">
+
+                <span id="switch-text">
+                    Нет аккаунта?
+                </span>
+
+                <button
+                    type="button"
+                    id="switch-button"
+                    onclick="showRegister()"
+                >
+                    Регистрация
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+
+<!-- СОСТОЯНИЕ АВТОРИЗАЦИИ -->
+
+<div
+    id="user-status"
+    data-logged-in="{{ 'true' if username else 'false' }}"
+    data-username="{{ username or '' }}"
+    style="display: none;"
+></div>
+
+<script>
+    const userStatus = document.getElementById("user-status");
+    const isLoggedIn = userStatus.dataset.loggedIn === "true";
+    window.currentUsername = userStatus.dataset.username || null;
+</script>
+
+<script src="{{ url_for('static', filename='astronomy.js') }}"></script>
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+<!-- МОБИЛЬНЫЙ КАТАЛОГ -->
+
+<script>
+    function toggleMobileCatalog() {
+        document
+            .getElementById("side-panel")
+            .classList.toggle("mobile-open");
+    }
+</script>
+
+</body>
+</html>

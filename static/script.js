@@ -558,43 +558,59 @@ function toggleSearch() {
     if (wrapper.classList.contains('active')) {
         wrapper.classList.remove('active');
         error.classList.remove('visible');
+
+        if (result.classList.contains('visible')) {
+            input.value = result.textContent;
+        }
+
         return;
     }
 
     wrapper.classList.add('active');
     error.classList.remove('visible');
-    result.classList.remove('visible');
-    input.value = '';
-    input.focus();
+
+    if (result.classList.contains('visible')) {
+        input.value = result.textContent;
+    } else {
+        input.value = '';
+    }
+
+    setTimeout(function() {
+        input.focus();
+    }, 0);
 }
+
+// ОТПРАВКА ПОИСКА
+
+document.getElementById('search-form').addEventListener(
+    'submit',
+    function(event) {
+        event.preventDefault();
+        performSearch();
+    }
+);
 
 // КНОПКА ПОИСКА
 
-document.querySelector(".search-button").addEventListener("click", function() {
-    const wrapper = document.getElementById("search-wrapper");
-    const input = document.getElementById("search-input");
+document.querySelector('.search-button').addEventListener(
+    'click',
+    function() {
+        const wrapper = document.getElementById('search-wrapper');
+        const input = document.getElementById('search-input');
 
-    if (!wrapper.classList.contains("active")) {
+        if (wrapper.classList.contains('active')) {
+            if (input.value.trim()) {
+                performSearch();
+            } else {
+                toggleSearch();
+            }
+
+            return;
+        }
+
         toggleSearch();
-        input.focus();
-        return;
     }
-
-    if (input.value.trim()) {
-        performSearch();
-    }
-});
-
-// ENTER В ПОИСКЕ
-
-function handleSearchKey(event) {
-    if (event.key !== 'Enter') {
-        return;
-    }
-
-    event.preventDefault();
-    performSearch();
-}
+);
 
 // ВЫПОЛНИТЬ ПОИСК
 
@@ -603,13 +619,13 @@ function performSearch() {
     const wrapper = document.getElementById('search-wrapper');
     const error = document.getElementById('search-error');
     const result = document.getElementById('search-result');
+
     const searchText = normalizeSearchText(input.value);
 
     error.classList.remove('visible');
-    result.classList.remove('visible');
 
     if (!searchText) {
-        error.classList.add('visible');
+        wrapper.classList.remove('active');
         return;
     }
 
@@ -626,9 +642,12 @@ function performSearch() {
 
     if (foundConstellation) {
         searchSelectConstellation(foundConstellation);
+
         wrapper.classList.remove('active');
+
         result.textContent = foundConstellation;
         result.classList.add('visible');
+
         return;
     }
 
@@ -640,9 +659,12 @@ function performSearch() {
 
     if (foundStar) {
         searchSelectStar(foundStar);
+
         wrapper.classList.remove('active');
+
         result.textContent = foundStar.name;
         result.classList.add('visible');
+
         return;
     }
 

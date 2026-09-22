@@ -298,7 +298,9 @@ async function showStarCard(star) {
     document.getElementById('card-title').textContent = star.name;
     document.getElementById('card-description').textContent = star.description;
 
-    document.getElementById('card-details').innerHTML = `
+    document.getElementById(
+        'card-details'
+    ).innerHTML = `
         <strong>Координаты:</strong>
         <br>
         ${star.coordinates}
@@ -306,35 +308,39 @@ async function showStarCard(star) {
         <strong>Расстояние от Земли:</strong>
         <br>
         ${star.distance}
-        <br><br>
-        <div class="object-note-container">
-            Загрузка заметки...
-        </div>
     `;
 
     card.classList.add('visible');
+
     positionStarCard(star);
 
-    const note = await getObjectNote('star', star.name);
-    const details = document.getElementById('card-details');
+    if (!window.currentUsername) {
+        return;
+    }
+
+    const note = await getObjectNote(
+        'star',
+        star.name
+    );
+
+    const details = document.getElementById(
+        'card-details'
+    );
 
     if (!details) {
         return;
     }
 
-    const noteContainer = details.querySelector('.object-note-container');
-
-    if (!noteContainer) {
-        return;
-    }
-
     if (note) {
-        noteContainer.innerHTML = `
+        details.innerHTML += `
+            <br>
             <div class="object-note">
                 <strong>📝 Моя заметка:</strong>
+
                 <div class="object-note-text">
                     ${escapeHtml(note.text)}
                 </div>
+
                 <button
                     class="add-object-note"
                     onclick="deleteObjectNote(${note.id})"
@@ -343,8 +349,9 @@ async function showStarCard(star) {
                 </button>
             </div>
         `;
-    } else if (window.currentUsername) {
-        noteContainer.innerHTML = `
+    } else {
+        details.innerHTML += `
+            <br>
             <button
                 class="add-object-note"
                 onclick="openObjectNote('star', '${escapeHtml(star.name)}')"
@@ -352,11 +359,7 @@ async function showStarCard(star) {
                 Добавить заметку
             </button>
         `;
-    } else {
-        noteContainer.innerHTML = "";
     }
-
-    positionStarCard(star);
 }
 
 // ПОЗИЦИЯ КАРТОЧКИ ЗВЕЗДЫ
@@ -447,15 +450,12 @@ async function showConstellationCard(constellationName) {
         `;
     });
 
-    html += `
-        </div>
-        <div class="object-note-container">
-            Загрузка заметки...
-        </div>
-    `;
-
     document.getElementById('card-details').innerHTML = html;
     card.classList.add('visible');
+
+    if (!window.currentUsername) {
+        return;
+    }
 
     const note = await getObjectNote(
         'constellation',
@@ -468,19 +468,16 @@ async function showConstellationCard(constellationName) {
         return;
     }
 
-    const noteContainer = details.querySelector('.object-note-container');
-
-    if (!noteContainer) {
-        return;
-    }
-
     if (note) {
-        noteContainer.innerHTML = `
+        details.innerHTML += `
+            <br>
             <div class="object-note">
                 <strong>📝 Моя заметка:</strong>
+
                 <div class="object-note-text">
                     ${escapeHtml(note.text)}
                 </div>
+
                 <button
                     class="add-object-note"
                     onclick="deleteObjectNote(${note.id})"
@@ -489,8 +486,9 @@ async function showConstellationCard(constellationName) {
                 </button>
             </div>
         `;
-    } else if (window.currentUsername) {
-        noteContainer.innerHTML = `
+    } else {
+        details.innerHTML += `
+            <br>
             <button
                 class="add-object-note"
                 onclick="openObjectNote('constellation', '${escapeHtml(constellationName)}')"
@@ -498,8 +496,6 @@ async function showConstellationCard(constellationName) {
                 Добавить заметку
             </button>
         `;
-    } else {
-        noteContainer.innerHTML = "";
     }
 }
 

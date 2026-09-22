@@ -4,7 +4,7 @@ import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
-app.secret_key = "astronomy-secret-key"
+app.secret_key = os.environ.get("SECRET_KEY", "astronomy-secret-key")
 
 
 def get_db_path():
@@ -48,8 +48,10 @@ def register():
 
     if password != password_repeat:
         return {"success": False, "error": "Пароли не совпадают"}
+
     if len(username) < 3:
         return {"success": False, "error": "Логин должен содержать минимум 3 символа"}
+
     if len(password) < 4:
         return {"success": False, "error": "Пароль должен содержать минимум 4 символа"}
 
@@ -57,16 +59,19 @@ def register():
 
     try:
         password_hash = generate_password_hash(password)
+
         conn.execute(
             "INSERT INTO users (username, password) VALUES (?, ?)",
             (username, password_hash)
         )
         conn.commit()
+
     except sqlite3.IntegrityError:
         conn.close()
         return {"success": False, "error": "Такой логин уже занят"}
 
     conn.close()
+
     session["username"] = username
     return {"success": True, "username": username}
 
@@ -75,27 +80,31 @@ def register():
 def login():
     username = request.form["username"].strip()
     password = request.form["password"]
+
     conn = sqlite3.connect(get_db_path())
+
     user = conn.execute(
         "SELECT username, password FROM users WHERE username = ?",
         (username,)
     ).fetchone()
+
     conn.close()
 
     if user is None or not check_password_hash(user[1], password):
         return {"success": False, "error": "Неверный логин или пароль"}
 
     session["username"] = user[0]
+
     return {"success": True, "username": user[0]}
 
 
-# Работа с заметками
 @app.route("/notes", methods=["GET", "POST"])
 def notes():
     if "username" not in session:
         return {"success": False, "error": "Необходимо войти в аккаунт"}
 
     conn = sqlite3.connect(get_db_path())
+
     user = conn.execute(
         "SELECT id FROM users WHERE username = ?",
         (session["username"],)
@@ -123,8 +132,10 @@ def notes():
             """,
             (user_id, text, object_type, object_name)
         )
+
         conn.commit()
         conn.close()
+
         return {"success": True}
 
     notes_list = conn.execute(
@@ -136,6 +147,7 @@ def notes():
         """,
         (user_id,)
     ).fetchall()
+
     conn.close()
 
     notes_result = [
@@ -147,6 +159,7 @@ def notes():
         }
         for note in notes_list
     ]
+
     return {"success": True, "notes": notes_result}
 
 
@@ -156,6 +169,7 @@ def delete_note(note_id):
         return {"success": False, "error": "Необходимо войти в аккаунт"}
 
     conn = sqlite3.connect(get_db_path())
+
     user = conn.execute(
         "SELECT id FROM users WHERE username = ?",
         (session["username"],)
@@ -169,8 +183,10 @@ def delete_note(note_id):
         "DELETE FROM notes WHERE id = ? AND user_id = ?",
         (note_id, user[0])
     )
+
     conn.commit()
     conn.close()
+
     return {"success": True}
 
 
@@ -187,4 +203,4 @@ def logout():
 
 if __name__ == "__main__":
     init_db()
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=False)

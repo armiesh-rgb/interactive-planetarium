@@ -4,7 +4,7 @@ import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
-app.secret_key = os.environ.get("SECRET_KEY", "astronomy-secret-key")
+app.secret_key = os.environ.get("SECRET_KEY")
 
 
 def get_db_path():

@@ -8,6 +8,20 @@ document.addEventListener("DOMContentLoaded", function() {
     initSearch();
     initAuth();
     initNotes();
+
+    document.addEventListener("click", function(event) {
+        const wrapper = document.getElementById("search-wrapper");
+        const container = document.querySelector(".search-container");
+
+        if (
+            wrapper &&
+            container &&
+            wrapper.classList.contains("active") &&
+            !container.contains(event.target)
+        ) {
+            closeSearch();
+        }
+    });
 });
 
 // ПОИСК ЗВЕЗДЫ

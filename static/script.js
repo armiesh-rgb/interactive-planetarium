@@ -4,6 +4,12 @@ let highlightCatalog = null;
 let constellationOverlay = null;
 let activeConstellation = null;
 
+document.addEventListener("DOMContentLoaded", function() {
+    initSearch();
+    initAuth();
+    initNotes();
+});
+
 // ПОИСК ЗВЕЗДЫ
 
 function findStar(name) {
@@ -15,11 +21,11 @@ function findStar(name) {
 // ИНИЦИАЛИЗАЦИЯ ALADIN
 
 A.init.then(function() {
-    aladin = A.aladin('#aladin-lite-div', {
-        survey: 'P/DSS2/color',
-        projection: 'TAN',
+    aladin = A.aladin("#aladin-lite-div", {
+        survey: "P/DSS2/color",
+        projection: "TAN",
         fov: 60,
-        cooFrame: 'equatorial',
+        cooFrame: "equatorial",
         showReticle: false,
         showZoomControl: true,
         showFullscreenControl: false,
@@ -28,36 +34,42 @@ A.init.then(function() {
         showCooGrid: false
     });
 
-    document.getElementById("aladin-lite-div").addEventListener("click", function(event) {
-        const target = event.target;
+    const aladinElement = document.getElementById("aladin-lite-div");
 
-        if (
-            target.closest(".aladin-fov") ||
-            target.closest("canvas") ||
-            target.tagName === "CANVAS"
-        ) {
-            const sidePanel = document.getElementById("side-panel");
+    if (aladinElement) {
+        aladinElement.addEventListener("click", function(event) {
+            const target = event.target;
 
-            if (sidePanel && sidePanel.classList.contains("mobile-open")) {
-                sidePanel.classList.remove("mobile-open");
+            if (
+                target.closest(".aladin-fov") ||
+                target.closest("canvas") ||
+                target.tagName === "CANVAS"
+            ) {
+                const sidePanel = document.getElementById("side-panel");
+
+                if (
+                    sidePanel &&
+                    sidePanel.classList.contains("mobile-open")
+                ) {
+                    sidePanel.classList.remove("mobile-open");
+                }
             }
-        }
-    });
+        });
+    }
 
     // КАТАЛОГ ЗВЁЗД
 
     starCatalog = A.catalog({
-        name: 'Звёзды',
+        name: "Звёзды",
         sourceSize: 14,
-        color: '#ffff00',
-        shape: 'circle',
+        color: "#ffff00",
+        shape: "circle",
         displayLabel: true,
-        labelColumn: 'name',
-        labelColor: '#ffffff',
-        labelFont: '14px sans-serif',
-        onClick: function(source) {
-            console.log('Клик по звезде:', source);
+        labelColumn: "name",
+        labelColor: "#ffffff",
+        labelFont: "14px sans-serif",
 
+        onClick: function(source) {
             if (!source || !source.data || !source.data.name) {
                 return;
             }
@@ -69,9 +81,13 @@ A.init.then(function() {
             }
 
             if (activeConstellation) {
-                const constellation = constellationData[activeConstellation];
+                const constellation =
+                    constellationData[activeConstellation];
 
-                if (!constellation.stars.includes(star.name)) {
+                if (
+                    constellation &&
+                    !constellation.stars.includes(star.name)
+                ) {
                     clearConstellation();
                 }
             }
@@ -97,10 +113,10 @@ A.init.then(function() {
     // ВЫДЕЛЕНИЕ ЗВЕЗДЫ
 
     highlightCatalog = A.catalog({
-        name: 'Выделение',
+        name: "Выделение",
         sourceSize: 30,
-        color: '#ffffff',
-        shape: 'cross',
+        color: "#ffffff",
+        shape: "cross",
         displayLabel: false
     });
 
@@ -109,15 +125,15 @@ A.init.then(function() {
     // ЛИНИИ СОЗВЕЗДИЙ
 
     constellationOverlay = A.graphicOverlay({
-        name: 'Созвездия',
-        color: '#ffffff',
+        name: "Созвездия",
+        color: "#ffffff",
         lineWidth: 3
     });
 
     aladin.addOverlay(constellationOverlay);
     constellationOverlay.hide();
 
-    aladin.on('zoomChanged', function() {
+    aladin.on("zoomChanged", function() {
         updateConstellationVisibility();
     });
 });
@@ -148,9 +164,13 @@ function goToStar(starName, button) {
     }
 
     if (activeConstellation) {
-        const constellation = constellationData[activeConstellation];
+        const constellation =
+            constellationData[activeConstellation];
 
-        if (!constellation.stars.includes(starName)) {
+        if (
+            constellation &&
+            !constellation.stars.includes(starName)
+        ) {
             clearConstellation();
         }
     }
@@ -183,17 +203,26 @@ function goToStarFromConstellation(starName) {
 // ПЕРЕЙТИ К СОЗВЕЗДИЮ
 
 function goToConstellation(constellationName, button) {
-    const constellation = constellationData[constellationName];
+    const constellation =
+        constellationData[constellationName];
 
     if (!constellation || !aladin) {
         return;
     }
 
     activeConstellation = constellationName;
-    selectButton(button);
-    highlightCatalog.removeAll();
 
-    aladin.gotoRaDec(constellation.ra * 15, constellation.dec);
+    selectButton(button);
+
+    if (highlightCatalog) {
+        highlightCatalog.removeAll();
+    }
+
+    aladin.gotoRaDec(
+        constellation.ra * 15,
+        constellation.dec
+    );
+
     aladin.setFov(25);
 
     drawConstellation(constellationName);
@@ -207,7 +236,8 @@ function drawConstellation(constellationName) {
         return;
     }
 
-    const constellation = constellationData[constellationName];
+    const constellation =
+        constellationData[constellationName];
 
     if (!constellation) {
         return;
@@ -229,7 +259,7 @@ function drawConstellation(constellationName) {
                 [star2.ra * 15, star2.dec]
             ],
             {
-                color: '#ffffff',
+                color: "#ffffff",
                 lineWidth: 3
             }
         );
@@ -238,16 +268,17 @@ function drawConstellation(constellationName) {
     });
 
     constellationOverlay.show();
-
-    console.log('Созвездие нарисовано:', constellationName);
-
     updateConstellationVisibility();
 }
 
 // ВИДИМОСТЬ ЛИНИЙ
 
 function updateConstellationVisibility() {
-    if (!constellationOverlay || !activeConstellation || !aladin) {
+    if (
+        !constellationOverlay ||
+        !activeConstellation ||
+        !aladin
+    ) {
         return;
     }
 
@@ -276,16 +307,19 @@ async function getObjectNote(objectType, objectName) {
             return null;
         }
 
-        const note = result.notes.find(function(item) {
+        return result.notes.find(function(item) {
             return (
                 item.object_type === objectType &&
                 item.object_name === objectName
             );
-        });
+        }) || null;
 
-        return note || null;
     } catch (error) {
-        console.error("Ошибка получения заметки:", error);
+        console.error(
+            "Ошибка получения заметки:",
+            error
+        );
+
         return null;
     }
 }
@@ -293,14 +327,21 @@ async function getObjectNote(objectType, objectName) {
 // КАРТОЧКА ЗВЕЗДЫ
 
 async function showStarCard(star) {
-    const card = document.getElementById('info-card');
+    const card = document.getElementById("info-card");
+    const title = document.getElementById("card-title");
+    const description =
+        document.getElementById("card-description");
+    const details =
+        document.getElementById("card-details");
 
-    document.getElementById('card-title').textContent = star.name;
-    document.getElementById('card-description').textContent = star.description;
+    if (!card || !title || !description || !details) {
+        return;
+    }
 
-    document.getElementById(
-        'card-details'
-    ).innerHTML = `
+    title.textContent = star.name;
+    description.textContent = star.description;
+
+    details.innerHTML = `
         <strong>Координаты:</strong>
         <br>
         ${star.coordinates}
@@ -310,24 +351,22 @@ async function showStarCard(star) {
         ${star.distance}
     `;
 
-    card.classList.add('visible');
+    card.classList.add("visible");
 
     positionStarCard(star);
+
+    // ЗАМЕТКИ ЗАГРУЖАЮТСЯ ТОЛЬКО ДЛЯ АВТОРИЗОВАННЫХ
 
     if (!window.currentUsername) {
         return;
     }
 
     const note = await getObjectNote(
-        'star',
+        "star",
         star.name
     );
 
-    const details = document.getElementById(
-        'card-details'
-    );
-
-    if (!details) {
+    if (!document.getElementById("card-details")) {
         return;
     }
 
@@ -354,7 +393,10 @@ async function showStarCard(star) {
             <br>
             <button
                 class="add-object-note"
-                onclick="openObjectNote('star', '${escapeHtml(star.name)}')"
+                onclick="openObjectNote(
+                    'star',
+                    '${escapeHtml(star.name)}'
+                )"
             >
                 Добавить заметку
             </button>
@@ -369,14 +411,22 @@ function positionStarCard(star) {
         return;
     }
 
-    const card = document.getElementById('info-card');
-    const pixel = aladin.world2pix(star.ra * 15, star.dec);
+    const card = document.getElementById("info-card");
+    const main = document.querySelector("main");
+
+    if (!card || !main) {
+        return;
+    }
+
+    const pixel = aladin.world2pix(
+        star.ra * 15,
+        star.dec
+    );
 
     if (!pixel) {
         return;
     }
 
-    const main = document.querySelector('main');
     const cardWidth = card.offsetWidth;
     const cardHeight = card.offsetHeight;
     const mainWidth = main.clientWidth;
@@ -397,17 +447,21 @@ function positionStarCard(star) {
         top = mainHeight - cardHeight - 15;
     }
 
-    const panel = document.querySelector('.side-panel');
+    const panel = document.querySelector(".side-panel");
 
     if (panel) {
-        const panelWidth = panel.offsetWidth + 30;
+        const panelWidth =
+            panel.offsetWidth + 30;
 
-        if (left < panelWidth && pixel[0] < panelWidth) {
+        if (
+            left < panelWidth &&
+            pixel[0] < panelWidth
+        ) {
             left = panelWidth;
         }
     }
 
-    card.style.right = 'auto';
+    card.style.right = "auto";
     card.style.left = `${left}px`;
     card.style.top = `${top}px`;
 }
@@ -415,20 +469,40 @@ function positionStarCard(star) {
 // КАРТОЧКА СОЗВЕЗДИЯ
 
 async function showConstellationCard(constellationName) {
-    const constellation = constellationData[constellationName];
+    const constellation =
+        constellationData[constellationName];
 
     if (!constellation) {
         return;
     }
 
-    const card = document.getElementById('info-card');
+    const card =
+        document.getElementById("info-card");
 
-    card.style.left = 'auto';
-    card.style.right = '25px';
-    card.style.top = '25px';
+    const title =
+        document.getElementById("card-title");
 
-    document.getElementById('card-title').textContent = constellationName;
-    document.getElementById('card-description').textContent = 'Созвездие';
+    const description =
+        document.getElementById("card-description");
+
+    const details =
+        document.getElementById("card-details");
+
+    if (
+        !card ||
+        !title ||
+        !description ||
+        !details
+    ) {
+        return;
+    }
+
+    card.style.left = "auto";
+    card.style.right = "25px";
+    card.style.top = "25px";
+
+    title.textContent = constellationName;
+    description.textContent = "Созвездие";
 
     let html = `
         <div class="constellation-list-title">
@@ -450,21 +524,25 @@ async function showConstellationCard(constellationName) {
         `;
     });
 
-    document.getElementById('card-details').innerHTML = html;
-    card.classList.add('visible');
+    html += `
+        </div>
+    `;
+
+    details.innerHTML = html;
+    card.classList.add("visible");
+
+    // ЗАМЕТКИ ТОЛЬКО ДЛЯ АВТОРИЗОВАННЫХ
 
     if (!window.currentUsername) {
         return;
     }
 
     const note = await getObjectNote(
-        'constellation',
+        "constellation",
         constellationName
     );
 
-    const details = document.getElementById('card-details');
-
-    if (!details) {
+    if (!document.getElementById("card-details")) {
         return;
     }
 
@@ -491,7 +569,10 @@ async function showConstellationCard(constellationName) {
             <br>
             <button
                 class="add-object-note"
-                onclick="openObjectNote('constellation', '${escapeHtml(constellationName)}')"
+                onclick="openObjectNote(
+                    'constellation',
+                    '${escapeHtml(constellationName)}'
+                )"
             >
                 Добавить заметку
             </button>
@@ -503,11 +584,11 @@ async function showConstellationCard(constellationName) {
 
 function escapeHtml(text) {
     return String(text)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }
 
 // ЗВЕЗДА ИЗ КАРТОЧКИ
@@ -516,59 +597,138 @@ function openConstellationStar(event, element) {
     event.preventDefault();
 
     const starName = element.dataset.star;
+
     goToStarFromConstellation(starName);
 }
 
 // ЗАКРЫТЬ КАРТОЧКУ
 
 function closeCard() {
-    document.getElementById('info-card').classList.remove('visible');
+    const card =
+        document.getElementById("info-card");
+
+    if (card) {
+        card.classList.remove("visible");
+    }
 }
 
 // ВЫБРАТЬ КНОПКУ
 
 function selectButton(button) {
-    document.querySelectorAll('.object-button').forEach(function(item) {
-        item.classList.remove('selected');
-    });
+    document
+        .querySelectorAll(".object-button")
+        .forEach(function(item) {
+            item.classList.remove("selected");
+        });
 
     if (button) {
-        button.classList.add('selected');
+        button.classList.add("selected");
     }
 }
 
 // ПОИСК
 
 function normalizeSearchText(text) {
-    return String(text).toLowerCase().replace(/\s+/g, '');
+    return String(text)
+        .toLowerCase()
+        .replace(/\s+/g, "");
 }
 
-// ОТКРЫТЬ / ЗАКРЫТЬ ПОИСК
+// ИНИЦИАЛИЗАЦИЯ ПОИСКА
 
-function toggleSearch() {
-    const wrapper = document.getElementById('search-wrapper');
-    const input = document.getElementById('search-input');
-    const error = document.getElementById('search-error');
-    const result = document.getElementById('search-result');
+function initSearch() {
+    const form =
+        document.getElementById("search-form");
 
-    if (wrapper.classList.contains('active')) {
-        wrapper.classList.remove('active');
-        error.classList.remove('visible');
+    const button =
+        document.querySelector(".search-button");
 
-        if (result.classList.contains('visible')) {
-            input.value = result.textContent;
-        }
+    const wrapper =
+        document.getElementById("search-wrapper");
 
+    const input =
+        document.getElementById("search-input");
+
+    const error =
+        document.getElementById("search-error");
+
+    const result =
+        document.getElementById("search-result");
+
+    if (
+        !form ||
+        !button ||
+        !wrapper ||
+        !input ||
+        !error ||
+        !result
+    ) {
         return;
     }
 
-    wrapper.classList.add('active');
-    error.classList.remove('visible');
+    // УБИРАЕМ СТАРЫЙ INLINE onclick
+    // ЧТОБЫ КНОПКА НЕ СРАБАТЫВАЛА ДВАЖДЫ
 
-    if (result.classList.contains('visible')) {
+    button.onclick = null;
+
+    // ОТПРАВКА ПОИСКА
+
+    form.addEventListener(
+        "submit",
+        function(event) {
+            event.preventDefault();
+            performSearch();
+        }
+    );
+
+    // КНОПКА ПОИСКА
+
+    button.addEventListener(
+        "click",
+        function(event) {
+            event.preventDefault();
+
+            if (wrapper.classList.contains("active")) {
+                if (input.value.trim()) {
+                    performSearch();
+                } else {
+                    closeSearch();
+                }
+
+                return;
+            }
+
+            openSearch();
+        }
+    );
+}
+
+// ОТКРЫТЬ ПОИСК
+
+function openSearch() {
+    const wrapper =
+        document.getElementById("search-wrapper");
+
+    const input =
+        document.getElementById("search-input");
+
+    const error =
+        document.getElementById("search-error");
+
+    const result =
+        document.getElementById("search-result");
+
+    if (!wrapper || !input || !error || !result) {
+        return;
+    }
+
+    wrapper.classList.add("active");
+    error.classList.remove("visible");
+
+    if (result.classList.contains("visible")) {
         input.value = result.textContent;
     } else {
-        input.value = '';
+        input.value = "";
     }
 
     setTimeout(function() {
@@ -576,52 +736,83 @@ function toggleSearch() {
     }, 0);
 }
 
-// ОТПРАВКА ПОИСКА
+// ЗАКРЫТЬ ПОИСК
 
-document.getElementById('search-form').addEventListener(
-    'submit',
-    function(event) {
-        event.preventDefault();
-        performSearch();
+function closeSearch() {
+    const wrapper =
+        document.getElementById("search-wrapper");
+
+    const input =
+        document.getElementById("search-input");
+
+    const error =
+        document.getElementById("search-error");
+
+    const result =
+        document.getElementById("search-result");
+
+    if (!wrapper || !input || !error || !result) {
+        return;
     }
-);
 
-// КНОПКА ПОИСКА
+    wrapper.classList.remove("active");
+    error.classList.remove("visible");
 
-document.querySelector('.search-button').addEventListener(
-    'click',
-    function() {
-        const wrapper = document.getElementById('search-wrapper');
-        const input = document.getElementById('search-input');
-
-        if (wrapper.classList.contains('active')) {
-            if (input.value.trim()) {
-                performSearch();
-            } else {
-                toggleSearch();
-            }
-
-            return;
-        }
-
-        toggleSearch();
+    if (result.classList.contains("visible")) {
+        input.value = result.textContent;
     }
-);
+}
+
+// ОСТАВЛЯЕМ ЭТУ ФУНКЦИЮ ДЛЯ index.html
+
+function toggleSearch() {
+    const wrapper =
+        document.getElementById("search-wrapper");
+
+    if (!wrapper) {
+        return;
+    }
+
+    if (wrapper.classList.contains("active")) {
+        closeSearch();
+    } else {
+        openSearch();
+    }
+}
 
 // ВЫПОЛНИТЬ ПОИСК
 
 function performSearch() {
-    const input = document.getElementById('search-input');
-    const wrapper = document.getElementById('search-wrapper');
-    const error = document.getElementById('search-error');
-    const result = document.getElementById('search-result');
+    const input =
+        document.getElementById("search-input");
 
-    const searchText = normalizeSearchText(input.value);
+    const wrapper =
+        document.getElementById("search-wrapper");
 
-    error.classList.remove('visible');
+    const error =
+        document.getElementById("search-error");
+
+    const result =
+        document.getElementById("search-result");
+
+    if (
+        !input ||
+        !wrapper ||
+        !error ||
+        !result
+    ) {
+        return;
+    }
+
+    const searchText =
+        normalizeSearchText(input.value);
+
+    error.classList.remove("visible");
+
+    // ПУСТОЙ ПОИСК
 
     if (!searchText) {
-        wrapper.classList.remove('active');
+        closeSearch();
         return;
     }
 
@@ -629,44 +820,62 @@ function performSearch() {
 
     let foundConstellation = null;
 
-    for (const constellationName in constellationData) {
-        if (normalizeSearchText(constellationName) === searchText) {
-            foundConstellation = constellationName;
+    for (
+        const constellationName in constellationData
+    ) {
+        if (
+            normalizeSearchText(constellationName) ===
+            searchText
+        ) {
+            foundConstellation =
+                constellationName;
+
             break;
         }
     }
 
     if (foundConstellation) {
-        searchSelectConstellation(foundConstellation);
+        searchSelectConstellation(
+            foundConstellation
+        );
 
-        wrapper.classList.remove('active');
+        closeSearch();
 
-        result.textContent = foundConstellation;
-        result.classList.add('visible');
+        result.textContent =
+            foundConstellation;
+
+        result.classList.add("visible");
 
         return;
     }
 
     // ИЩЕМ ЗВЕЗДУ
 
-    const foundStar = starData.find(function(star) {
-        return normalizeSearchText(star.name) === searchText;
-    });
+    const foundStar = starData.find(
+        function(star) {
+            return (
+                normalizeSearchText(star.name) ===
+                searchText
+            );
+        }
+    );
 
     if (foundStar) {
         searchSelectStar(foundStar);
 
-        wrapper.classList.remove('active');
+        closeSearch();
 
-        result.textContent = foundStar.name;
-        result.classList.add('visible');
+        result.textContent =
+            foundStar.name;
+
+        result.classList.add("visible");
 
         return;
     }
 
     // НЕ НАШЛИ
 
-    error.classList.add('visible');
+    error.classList.add("visible");
 }
 
 // ПОИСК ЗВЕЗДЫ
@@ -677,14 +886,22 @@ function searchSelectStar(star) {
     }
 
     if (activeConstellation) {
-        const constellation = constellationData[activeConstellation];
+        const constellation =
+            constellationData[activeConstellation];
 
-        if (!constellation.stars.includes(star.name)) {
+        if (
+            constellation &&
+            !constellation.stars.includes(star.name)
+        ) {
             clearConstellation();
         }
     }
 
-    aladin.gotoRaDec(star.ra * 15, star.dec);
+    aladin.gotoRaDec(
+        star.ra * 15,
+        star.dec
+    );
+
     aladin.setFov(2);
 
     highlightStar(star);
@@ -693,130 +910,354 @@ function searchSelectStar(star) {
 
 // ПОИСК СОЗВЕЗДИЯ
 
-function searchSelectConstellation(constellationName) {
+function searchSelectConstellation(
+    constellationName
+) {
     if (!aladin) {
         return;
     }
 
-    const constellation = constellationData[constellationName];
+    const constellation =
+        constellationData[constellationName];
 
     if (!constellation) {
         return;
     }
 
-    activeConstellation = constellationName;
-    highlightCatalog.removeAll();
+    activeConstellation =
+        constellationName;
 
-    aladin.gotoRaDec(constellation.ra * 15, constellation.dec);
+    if (highlightCatalog) {
+        highlightCatalog.removeAll();
+    }
+
+    aladin.gotoRaDec(
+        constellation.ra * 15,
+        constellation.dec
+    );
+
     aladin.setFov(25);
 
-    drawConstellation(constellationName);
-    showConstellationCard(constellationName);
+    drawConstellation(
+        constellationName
+    );
+
+    showConstellationCard(
+        constellationName
+    );
 }
 
 // СВОРАЧИВАНИЕ КАТАЛОГА
 
 function toggleCatalogSection(button) {
-    const content = button.nextElementSibling;
-    const isOpen = content.classList.contains('open');
+    const content =
+        button.nextElementSibling;
 
-    content.classList.toggle('open');
-    button.classList.toggle('open');
+    if (!content) {
+        return;
+    }
 
-    const symbol = button.querySelector('span');
+    const isOpen =
+        content.classList.contains("open");
+
+    content.classList.toggle("open");
+    button.classList.toggle("open");
+
+    const symbol =
+        button.querySelector("span");
 
     if (symbol) {
-        symbol.textContent = isOpen ? '+' : '−';
+        symbol.textContent =
+            isOpen ? "+" : "−";
+    }
+}
+
+// ИНИЦИАЛИЗАЦИЯ АВТОРИЗАЦИИ
+
+function initAuth() {
+    const loginForm =
+        document.getElementById("login-form");
+
+    const registerForm =
+        document.getElementById("register-form");
+
+    if (loginForm) {
+        loginForm.addEventListener(
+            "submit",
+            async function(event) {
+                event.preventDefault();
+
+                const error =
+                    document.getElementById(
+                        "login-error"
+                    );
+
+                if (error) {
+                    error.textContent = "";
+                }
+
+                const formData =
+                    new FormData(loginForm);
+
+                try {
+                    const response =
+                        await fetch("/login", {
+                            method: "POST",
+                            body: formData
+                        });
+
+                    const result =
+                        await response.json();
+
+                    if (result.success) {
+                        closeAuthCard();
+                        location.reload();
+                    } else if (error) {
+                        error.textContent =
+                            result.error ||
+                            "Неверный логин или пароль";
+                    }
+
+                } catch (error) {
+                    console.error(
+                        "Ошибка входа:",
+                        error
+                    );
+
+                    if (error) {
+                        error.textContent =
+                            "Не удалось выполнить вход";
+                    }
+                }
+            }
+        );
+    }
+
+    if (registerForm) {
+        registerForm.addEventListener(
+            "submit",
+            async function(event) {
+                event.preventDefault();
+
+                const error =
+                    document.getElementById(
+                        "register-error"
+                    );
+
+                if (error) {
+                    error.textContent = "";
+                }
+
+                const formData =
+                    new FormData(registerForm);
+
+                try {
+                    const response =
+                        await fetch("/register", {
+                            method: "POST",
+                            body: formData
+                        });
+
+                    const result =
+                        await response.json();
+
+                    if (result.success) {
+                        closeAuthCard();
+                        location.reload();
+                    } else if (error) {
+                        error.textContent =
+                            result.error ||
+                            "Не удалось зарегистрироваться";
+                    }
+
+                } catch (error) {
+                    console.error(
+                        "Ошибка регистрации:",
+                        error
+                    );
+
+                    if (error) {
+                        error.textContent =
+                            "Не удалось выполнить регистрацию";
+                    }
+                }
+            }
+        );
     }
 }
 
 // ВХОД И РЕГИСТРАЦИЯ
 
 function openAuthCard() {
-    document.getElementById("auth-overlay").style.display = "flex";
+    const overlay =
+        document.getElementById("auth-overlay");
+
+    if (!overlay) {
+        return;
+    }
+
+    overlay.style.display = "flex";
     showLogin();
 }
 
 function closeAuthCard() {
-    document.getElementById("auth-overlay").style.display = "none";
+    const overlay =
+        document.getElementById("auth-overlay");
+
+    if (!overlay) {
+        return;
+    }
+
+    overlay.style.display = "none";
 }
 
 function showLogin() {
-    document.getElementById("login-form").classList.remove("hidden");
-    document.getElementById("register-form").classList.add("hidden");
-    document.getElementById("auth-title").textContent = "Вход";
-    document.getElementById("switch-text").textContent = "Нет аккаунта?";
-    document.getElementById("switch-button").textContent = "Регистрация";
-    document.getElementById("switch-button").onclick = showRegister;
+    const loginForm =
+        document.getElementById("login-form");
+
+    const registerForm =
+        document.getElementById("register-form");
+
+    const title =
+        document.getElementById("auth-title");
+
+    const switchText =
+        document.getElementById("switch-text");
+
+    const switchButton =
+        document.getElementById("switch-button");
+
+    if (
+        !loginForm ||
+        !registerForm ||
+        !title ||
+        !switchText ||
+        !switchButton
+    ) {
+        return;
+    }
+
+    loginForm.classList.remove("hidden");
+    registerForm.classList.add("hidden");
+
+    title.textContent = "Вход";
+    switchText.textContent = "Нет аккаунта?";
+    switchButton.textContent = "Регистрация";
+
+    switchButton.onclick =
+        showRegister;
 }
 
 function showRegister() {
-    document.getElementById("login-form").classList.add("hidden");
-    document.getElementById("register-form").classList.remove("hidden");
-    document.getElementById("auth-title").textContent = "Регистрация";
-    document.getElementById("switch-text").textContent = "Уже есть аккаунт?";
-    document.getElementById("switch-button").textContent = "Войти";
-    document.getElementById("switch-button").onclick = showLogin;
+    const loginForm =
+        document.getElementById("login-form");
+
+    const registerForm =
+        document.getElementById("register-form");
+
+    const title =
+        document.getElementById("auth-title");
+
+    const switchText =
+        document.getElementById("switch-text");
+
+    const switchButton =
+        document.getElementById("switch-button");
+
+    if (
+        !loginForm ||
+        !registerForm ||
+        !title ||
+        !switchText ||
+        !switchButton
+    ) {
+        return;
+    }
+
+    loginForm.classList.add("hidden");
+    registerForm.classList.remove("hidden");
+
+    title.textContent = "Регистрация";
+    switchText.textContent = "Уже есть аккаунт?";
+    switchButton.textContent = "Войти";
+
+    switchButton.onclick =
+        showLogin;
 }
 
-// ВХОД
+// ИНИЦИАЛИЗАЦИЯ ЗАМЕТОК
 
-document.getElementById("login-form").addEventListener(
-    "submit",
-    async function(event) {
-        event.preventDefault();
+function initNotes() {
+    const noteForm =
+        document.getElementById("note-form");
 
-        const formData = new FormData(this);
-
-        const response = await fetch("/login", {
-            method: "POST",
-            body: formData
-        });
-
-        const result = await response.json();
-
-        const error = document.getElementById("login-error");
-
-        if (result.success) {
-            closeAuthCard();
-            location.reload();
-        } else {
-            error.textContent = result.error;
-        }
+    if (!noteForm) {
+        return;
     }
-);
 
-// РЕГИСТРАЦИЯ
+    noteForm.addEventListener(
+        "submit",
+        async function(event) {
+            event.preventDefault();
 
-document.getElementById("register-form").addEventListener(
-    "submit",
-    async function(event) {
-        event.preventDefault();
+            const textarea =
+                document.getElementById(
+                    "note-text"
+                );
 
-        const formData = new FormData(this);
+            if (!textarea) {
+                return;
+            }
 
-        const response = await fetch("/register", {
-            method: "POST",
-            body: formData
-        });
+            const text =
+                textarea.value.trim();
 
-        const result = await response.json();
+            if (!text) {
+                return;
+            }
 
-        const error = document.getElementById("register-error");
+            const formData =
+                new FormData();
 
-        if (result.success) {
-            closeAuthCard();
-            location.reload();
-        } else {
-            error.textContent = result.error;
+            formData.append(
+                "text",
+                text
+            );
+
+            try {
+                const response =
+                    await fetch("/notes", {
+                        method: "POST",
+                        body: formData
+                    });
+
+                const result =
+                    await response.json();
+
+                if (result.success) {
+                    textarea.value = "";
+                    loadNotes();
+                } else {
+                    alert(result.error);
+                }
+
+            } catch (error) {
+                console.error(
+                    "Ошибка добавления заметки:",
+                    error
+                );
+            }
         }
-    }
-);
+    );
+}
 
 // МОИ ЗАМЕТКИ
 
 function openNotesCard() {
-    const overlay = document.getElementById("notes-overlay");
+    const overlay =
+        document.getElementById(
+            "notes-overlay"
+        );
 
     if (!overlay) {
         return;
@@ -827,7 +1268,10 @@ function openNotesCard() {
 }
 
 function closeNotesCard() {
-    const overlay = document.getElementById("notes-overlay");
+    const overlay =
+        document.getElementById(
+            "notes-overlay"
+        );
 
     if (!overlay) {
         return;
@@ -839,7 +1283,10 @@ function closeNotesCard() {
 // ЗАГРУЗКА ЗАМЕТОК
 
 async function loadNotes() {
-    const list = document.getElementById("notes-list");
+    const list =
+        document.getElementById(
+            "notes-list"
+        );
 
     if (!list) {
         return;
@@ -848,11 +1295,17 @@ async function loadNotes() {
     list.innerHTML = "Загрузка...";
 
     try {
-        const response = await fetch("/notes");
-        const result = await response.json();
+        const response =
+            await fetch("/notes");
+
+        const result =
+            await response.json();
 
         if (!result.success) {
-            list.innerHTML = result.error || "Не удалось загрузить заметки";
+            list.innerHTML =
+                result.error ||
+                "Не удалось загрузить заметки";
+
             return;
         }
 
@@ -862,113 +1315,108 @@ async function loadNotes() {
                     У вас пока нет заметок.
                 </div>
             `;
+
             return;
         }
 
         list.innerHTML = "";
 
-        result.notes.forEach(function(note) {
-            const noteElement = document.createElement("div");
-            noteElement.className = "note-item";
+        result.notes.forEach(
+            function(note) {
+                const noteElement =
+                    document.createElement(
+                        "div"
+                    );
 
-            let objectInfo = "";
+                noteElement.className =
+                    "note-item";
 
-            if (note.object_type && note.object_name) {
-                if (note.object_type === "star") {
-                    objectInfo = `
-                        <div class="note-object">
-                            ⭐ ${escapeHtml(note.object_name)}
-                        </div>
-                    `;
-                } else {
-                    objectInfo = `
-                        <div class="note-object">
-                            ✦ ${escapeHtml(note.object_name)}
-                        </div>
-                    `;
+                let objectInfo = "";
+
+                if (
+                    note.object_type &&
+                    note.object_name
+                ) {
+                    if (
+                        note.object_type ===
+                        "star"
+                    ) {
+                        objectInfo = `
+                            <div class="note-object">
+                                ⭐ ${escapeHtml(
+                                    note.object_name
+                                )}
+                            </div>
+                        `;
+                    } else {
+                        objectInfo = `
+                            <div class="note-object">
+                                ✦ ${escapeHtml(
+                                    note.object_name
+                                )}
+                            </div>
+                        `;
+                    }
                 }
+
+                noteElement.innerHTML = `
+                    ${objectInfo}
+
+                    <div class="note-text">
+                        ${escapeHtml(note.text)}
+                    </div>
+
+                    <button
+                        class="note-delete"
+                        onclick="deleteNote(${note.id})"
+                    >
+                        ×
+                    </button>
+                `;
+
+                list.appendChild(
+                    noteElement
+                );
             }
+        );
 
-            noteElement.innerHTML = `
-                ${objectInfo}
-                <div class="note-text">
-                    ${escapeHtml(note.text)}
-                </div>
-                <button
-                    class="note-delete"
-                    onclick="deleteNote(${note.id})"
-                >
-                    ×
-                </button>
-            `;
-
-            list.appendChild(noteElement);
-        });
     } catch (error) {
-        console.error("Ошибка загрузки заметок:", error);
-        list.innerHTML = "Не удалось загрузить заметки.";
+        console.error(
+            "Ошибка загрузки заметок:",
+            error
+        );
+
+        list.innerHTML =
+            "Не удалось загрузить заметки.";
     }
-}
-
-// ДОБАВЛЕНИЕ ОБЫЧНОЙ ЗАМЕТКИ
-
-const noteForm = document.getElementById("note-form");
-
-if (noteForm) {
-    noteForm.addEventListener(
-        "submit",
-        async function(event) {
-            event.preventDefault();
-
-            const textarea = document.getElementById("note-text");
-            const text = textarea.value.trim();
-
-            if (!text) {
-                return;
-            }
-
-            const formData = new FormData();
-            formData.append("text", text);
-
-            try {
-                const response = await fetch("/notes", {
-                    method: "POST",
-                    body: formData
-                });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    textarea.value = "";
-                    loadNotes();
-                } else {
-                    alert(result.error);
-                }
-            } catch (error) {
-                console.error("Ошибка добавления заметки:", error);
-            }
-        }
-    );
 }
 
 // УДАЛЕНИЕ ЗАМЕТКИ
 
 async function deleteNote(noteId) {
     try {
-        const response = await fetch(
-            `/notes/delete/${noteId}`,
-            { method: "POST" }
-        );
+        const response =
+            await fetch(
+                `/notes/delete/${noteId}`,
+                {
+                    method: "POST"
+                }
+            );
 
-        const result = await response.json();
+        const result =
+            await response.json();
 
         if (result.success) {
             loadNotes();
         } else {
             alert(result.error);
         }
+
     } catch (error) {
-        console.error("Ошибка удаления заметки:", error);
+        console.error(
+            "Ошибка удаления заметки:",
+            error
+        );
     }
 }
 
@@ -979,32 +1427,63 @@ let currentNoteObjectName = null;
 
 // ОТКРЫТЬ ОКНО ЗАМЕТКИ
 
-function openObjectNote(objectType, objectName) {
+function openObjectNote(
+    objectType,
+    objectName
+) {
     if (!window.currentUsername) {
         openAuthCard();
         return;
     }
 
-    currentNoteObjectType = objectType;
-    currentNoteObjectName = objectName;
+    currentNoteObjectType =
+        objectType;
 
-    const overlay = document.getElementById("object-note-overlay");
-    const title = document.getElementById("object-note-title");
-    const textarea = document.getElementById("object-note-text");
-    const error = document.getElementById("object-note-error");
+    currentNoteObjectName =
+        objectName;
 
-    if (!overlay) {
+    const overlay =
+        document.getElementById(
+            "object-note-overlay"
+        );
+
+    const title =
+        document.getElementById(
+            "object-note-title"
+        );
+
+    const textarea =
+        document.getElementById(
+            "object-note-text"
+        );
+
+    const error =
+        document.getElementById(
+            "object-note-error"
+        );
+
+    if (
+        !overlay ||
+        !title ||
+        !textarea ||
+        !error
+    ) {
         return;
     }
 
     if (objectType === "star") {
-        title.textContent = "Заметка к звезде: " + objectName;
+        title.textContent =
+            "Заметка к звезде: " +
+            objectName;
     } else {
-        title.textContent = "Заметка к созвездию: " + objectName;
+        title.textContent =
+            "Заметка к созвездию: " +
+            objectName;
     }
 
     textarea.value = "";
     error.textContent = "";
+
     overlay.style.display = "flex";
     textarea.focus();
 }
@@ -1012,7 +1491,10 @@ function openObjectNote(objectType, objectName) {
 // ЗАКРЫТЬ ОКНО ЗАМЕТКИ
 
 function closeObjectNote() {
-    const overlay = document.getElementById("object-note-overlay");
+    const overlay =
+        document.getElementById(
+            "object-note-overlay"
+        );
 
     if (!overlay) {
         return;
@@ -1027,55 +1509,98 @@ async function saveObjectNote() {
     if (!window.currentUsername) {
         closeObjectNote();
         openAuthCard();
+
         return;
     }
 
-    const textarea = document.getElementById("object-note-text");
-    const error = document.getElementById("object-note-error");
-    const text = textarea.value.trim();
+    const textarea =
+        document.getElementById(
+            "object-note-text"
+        );
+
+    const error =
+        document.getElementById(
+            "object-note-error"
+        );
+
+    if (!textarea || !error) {
+        return;
+    }
+
+    const text =
+        textarea.value.trim();
 
     if (!text) {
-        error.textContent = "Введите текст заметки";
+        error.textContent =
+            "Введите текст заметки";
+
         return;
     }
 
-    const formData = new FormData();
-    formData.append("text", text);
-    formData.append("object_type", currentNoteObjectType);
-    formData.append("object_name", currentNoteObjectName);
+    const formData =
+        new FormData();
+
+    formData.append(
+        "text",
+        text
+    );
+
+    formData.append(
+        "object_type",
+        currentNoteObjectType
+    );
+
+    formData.append(
+        "object_name",
+        currentNoteObjectName
+    );
 
     try {
-        const response = await fetch("/notes", {
-            method: "POST",
-            body: formData
-        });
+        const response =
+            await fetch("/notes", {
+                method: "POST",
+                body: formData
+            });
 
-        const result = await response.json();
+        const result =
+            await response.json();
 
         if (result.success) {
             closeObjectNote();
 
-            // ОБНОВЛЯЕМ ТЕКУЩУЮ КАРТОЧКУ
-
-            if (currentNoteObjectType === "star") {
-                const star = findStar(currentNoteObjectName);
+            if (
+                currentNoteObjectType ===
+                "star"
+            ) {
+                const star =
+                    findStar(
+                        currentNoteObjectName
+                    );
 
                 if (star) {
                     showStarCard(star);
                 }
             } else {
-                showConstellationCard(currentNoteObjectName);
+                showConstellationCard(
+                    currentNoteObjectName
+                );
             }
 
-            // ОБНОВЛЯЕМ СПИСОК ЗАМЕТОК
-
             loadNotes();
+
         } else {
-            error.textContent = result.error;
+            error.textContent =
+                result.error;
         }
+
     } catch (e) {
-        console.error("Ошибка сохранения заметки:", e);
-        error.textContent = "Не удалось сохранить заметку";
+        console.error(
+            "Ошибка сохранения заметки:",
+            e
+        );
+
+        error.textContent =
+            "Не удалось сохранить заметку";
     }
 }
 
@@ -1087,32 +1612,50 @@ async function deleteObjectNote(noteId) {
     }
 
     try {
-        const response = await fetch(
-            `/notes/delete/${noteId}`,
-            { method: "POST" }
-        );
+        const response =
+            await fetch(
+                `/notes/delete/${noteId}`,
+                {
+                    method: "POST"
+                }
+            );
 
-        const result = await response.json();
+        const result =
+            await response.json();
 
         if (!result.success) {
             alert(result.error);
             return;
         }
 
-        // ПОСЛЕ УДАЛЕНИЯ ОБНОВЛЯЕМ КАРТОЧКУ
-
-        if (currentNoteObjectType === "star") {
-            const star = findStar(currentNoteObjectName);
+        if (
+            currentNoteObjectType ===
+            "star"
+        ) {
+            const star =
+                findStar(
+                    currentNoteObjectName
+                );
 
             if (star) {
                 showStarCard(star);
             }
-        } else if (currentNoteObjectType === "constellation") {
-            showConstellationCard(currentNoteObjectName);
+
+        } else if (
+            currentNoteObjectType ===
+            "constellation"
+        ) {
+            showConstellationCard(
+                currentNoteObjectName
+            );
         }
 
         loadNotes();
+
     } catch (error) {
-        console.error("Ошибка удаления заметки:", error);
+        console.error(
+            "Ошибка удаления заметки:",
+            error
+        );
     }
 }

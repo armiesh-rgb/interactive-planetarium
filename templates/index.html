@@ -19,23 +19,39 @@
 
 <nav>
     <div class="search-container">
-        <button class="search-button">⌕</button>
+
+    <button
+        type="button"
+        class="search-button"
+    >
+        ⌕
+    </button>
 
         <div id="search-wrapper">
-            <input
-                id="search-input"
-                type="text"
-                placeholder="Пишите без ошибок"
-                autocomplete="off"
-                onkeydown="handleSearchKey(event)"
-            >
+
+            <form id="search-form">
+
+                <input
+                    id="search-input"
+                    type="text"
+                    placeholder="Пишите без ошибок"
+                    autocomplete="off"
+                >
+
+            </form>
 
             <div id="search-error">
                 Ничего не найдено, возможно в написании допущена ошибка
             </div>
+
         </div>
 
-        <button id="search-result" onclick="toggleSearch()"></button>
+        <button
+            type="button"
+            id="search-result"
+            onclick="toggleSearch()"
+        ></button>
+
     </div>
 
     <a href="/">Главная</a>

@@ -231,31 +231,28 @@ function goToStarFromConstellation(starName) {
 
 // ПЕРЕЙТИ К СОЗВЕЗДИЮ
 
+
 function goToConstellation(constellationName, button) {
     const constellation = constellationData[constellationName];
 
-    if (!constellation || !aladin) {
+    if (!constellation || !aladin || !constellationOverlay) {
+        console.error("Созвездие не найдено:", constellationName);
         return;
     }
 
     activeConstellation = constellationName;
-
     selectButton(button);
 
-    if (highlightCatalog) {
-        highlightCatalog.removeAll();
-    }
+    highlightCatalog.removeAll();
+    constellationOverlay.removeAll();
 
-    aladin.gotoRaDec(
-        constellation.ra * 15,
-        constellation.dec
-    );
-
+    aladin.gotoRaDec(constellation.ra * 15, constellation.dec);
     aladin.setFov(25);
 
     drawConstellation(constellationName);
     showConstellationCard(constellationName);
 }
+
 
 // НАРИСОВАТЬ СОЗВЕЗДИЕ
 

@@ -418,7 +418,7 @@ async function showStarCard(star) {
             <br>
             <button
                 class="add-object-note"
-                onclick="openObjectNote('star', ${JSON.stringify(star.name).replace(/</g, "\\u003c")})"
+                onclick="openObjectNote('star', ${JSON.stringify(star.name).replace(/"/g, "&quot;").replace(/</g, "\\u003c")})"
             >
                 Добавить заметку
             </button>
@@ -575,7 +575,7 @@ async function showConstellationCard(constellationName) {
             <br>
             <button
                 class="add-object-note"
-                onclick="openObjectNote('constellation', ${JSON.stringify(constellationName).replace(/</g, "\\u003c")})"
+                onclick="openObjectNote('constellation', ${JSON.stringify(constellationName).replace(/"/g, "&quot;").replace(/</g, "\\u003c")})"
             >
                 Добавить заметку
             </button>

@@ -255,6 +255,8 @@ const starData = [
 const constellationData = {
     "Орион": {
         name: "Орион",
+        ra: 5.6,
+        dec: -1.5,
         stars: [
             "Бетельгейзе",
             "Беллатрикс",
@@ -268,18 +270,18 @@ const constellationData = {
             ["Бетельгейзе", "Беллатрикс"],
             ["Бетельгейзе", "Альнилам"],
             ["Беллатрикс", "Минтака"],
-            ["Минтака", "Альнитак"],
+            ["Минтака", "Альнилам"],
             ["Альнилам", "Альнитак"],
-            ["Бетельгейзе", "Ригель"],
-            ["Беллатрикс", "Ригель"],
             ["Альнитак", "Саиф"],
             ["Минтака", "Ригель"],
-            ["Саиф", "Ригель"]
+            ["Ригель", "Саиф"]
         ]
     },
 
     "Большая Медведица": {
         name: "Большая Медведица",
+        ra: 12.3,
+        dec: 55.5,
         stars: [
             "Дубхе",
             "Мерак",
@@ -302,6 +304,8 @@ const constellationData = {
 
     "Лира": {
         name: "Лира",
+        ra: 18.8,
+        dec: 36.0,
         stars: [
             "Вега",
             "Шелиак",
@@ -316,6 +320,8 @@ const constellationData = {
 
     "Лебедь": {
         name: "Лебедь",
+        ra: 20.3,
+        dec: 38.0,
         stars: [
             "Денеб",
             "Садр",
@@ -333,6 +339,8 @@ const constellationData = {
 
     "Кассиопея": {
         name: "Кассиопея",
+        ra: 1.0,
+        dec: 60.0,
         stars: [
             "Каф",
             "Шедар",
@@ -350,7 +358,7 @@ const constellationData = {
 };
 
 // 12 созвездий зодиака
-// Прямое восхождение указано в часах, склонение — в градусах.
+// Прямое восхождение — в часах, склонение — в градусах.
 
 const zodiacStars = [
     // Овен
@@ -394,7 +402,7 @@ const zodiacStars = [
     { constellation: 'Лев', name: 'Зосма', ra: 11.2351, dec: 20.5237 },
     { constellation: 'Лев', name: 'Адхафера', ra: 10.2782, dec: 23.4173 },
     { constellation: 'Лев', name: 'Расалас', ra: 9.7642, dec: 23.7743 },
-    { constellation: 'Лев', name: 'Эпсилон Льва', ra: 9.7658, dec: 23.7743 },
+    { constellation: 'Лев', name: 'Эпсилон Льва', ra: 9.7642, dec: 16.7620 },
 
     // Дева
     { constellation: 'Дева', name: 'Спика', ra: 13.4195, dec: -11.1613 },
@@ -439,14 +447,13 @@ const zodiacStars = [
     { constellation: 'Козерог', name: 'Окул', ra: 21.0340, dec: -15.2250 },
     { constellation: 'Козерог', name: 'Альшать', ra: 20.2940, dec: -12.5080 },
 
-    // Водолей
+    // Водолей — Гидор исключён
     { constellation: 'Водолей', name: 'Садальмелик', ra: 22.0964, dec: -0.3198 },
     { constellation: 'Водолей', name: 'Садальсууд', ra: 21.5250, dec: -5.5712 },
     { constellation: 'Водолей', name: 'Скат', ra: 22.9108, dec: -15.8208 },
     { constellation: 'Водолей', name: 'Альбали', ra: 20.7946, dec: -9.4958 },
     { constellation: 'Водолей', name: 'Анха', ra: 20.9809, dec: -7.3762 },
     { constellation: 'Водолей', name: 'Садахбия', ra: 22.3609, dec: -1.3873 },
-    { constellation: 'Водолей', name: 'Гидор', ra: 22.8769, dec: -7.5797 },
 
     // Рыбы
     { constellation: 'Рыбы', name: 'Альриша', ra: 2.0347, dec: 2.7638 },
@@ -458,8 +465,6 @@ const zodiacStars = [
     { constellation: 'Рыбы', name: 'Ревати', ra: 1.2289, dec: 7.5754 }
 ];
 
-// Исправленные схемы соединения звёзд.
-// Названия в линиях совпадают с именами в zodiacStars.
 const zodiacLines = {
     'Овен': [
         ['Мезартим', 'Шератан'],
@@ -498,6 +503,7 @@ const zodiacLines = {
         ['Регул', 'Альгиеба'],
         ['Альгиеба', 'Адхафера'],
         ['Адхафера', 'Расалас'],
+        ['Расалас', 'Эпсилон Льва'],
         ['Альгиеба', 'Зосма'],
         ['Зосма', 'Денебола'],
         ['Регул', 'Денебола']
@@ -542,8 +548,10 @@ const zodiacLines = {
     'Козерог': [
         ['Альгеди', 'Дабих'],
         ['Дабих', 'Окул'],
-        ['Окул', 'Денеб Альгеди'],
-        ['Денеб Альгеди', 'Альшать']
+        ['Окул', 'Нашира'],
+        ['Нашира', 'Денеб Альгеди'],
+        ['Денеб Альгеди', 'Альшать'],
+        ['Альшать', 'Альгеди']
     ],
 
     'Водолей': [
@@ -551,8 +559,7 @@ const zodiacLines = {
         ['Садахбия', 'Садальсууд'],
         ['Садальсууд', 'Анха'],
         ['Анха', 'Альбали'],
-        ['Альбали', 'Скат'],
-        ['Скат', 'Гидор']
+        ['Альбали', 'Скат']
     ],
 
     'Рыбы': [
@@ -565,7 +572,7 @@ const zodiacLines = {
     ]
 };
 
-// Добавляем звёзды зодиака в общий каталог.
+// Добавляем зодиакальные звёзды в общий каталог.
 zodiacStars.forEach(function(star) {
     starData.push({
         name: star.name,
@@ -579,16 +586,38 @@ zodiacStars.forEach(function(star) {
     });
 });
 
-// Создаём записи зодиакальных созвездий для карточек и линий.
+// Создаём записи созвездий для карточек, линий и центрирования карты.
+zodiacStars.reduce(function(groups, star) {
+    if (!groups[star.constellation]) {
+        groups[star.constellation] = [];
+    }
+
+    groups[star.constellation].push(star.name);
+    return groups;
+}, {});
+
 Object.keys(zodiacLines).forEach(function(constellationName) {
     const stars = zodiacStars.filter(function(star) {
         return star.constellation === constellationName;
     });
 
+    if (stars.length === 0) {
+        return;
+    }
+
+    // Средние координаты звёзд используются как центр созвездия.
+    const ra = stars.reduce(function(sum, star) {
+        return sum + star.ra;
+    }, 0) / stars.length;
+
+    const dec = stars.reduce(function(sum, star) {
+        return sum + star.dec;
+    }, 0) / stars.length;
+
     constellationData[constellationName] = {
         name: constellationName,
-        ra: stars[0].ra,
-        dec: stars[0].dec,
+        ra: ra,
+        dec: dec,
         stars: stars.map(function(star) {
             return star.name;
         }),
